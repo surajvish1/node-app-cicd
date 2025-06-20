@@ -1,0 +1,25 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  APP_NAME: cicd-node-app
+  PORT: 8080
+
+build:
+  stage: build
+  tags:
+    - ec2-runner
+  script:
+    - echo "Building Node.js Docker image..."
+    - docker build -t $APP_NAME .
+
+deploy:
+  stage: deploy
+  tags:
+    - ec2-runner
+  script:
+    - echo "Stopping existing container if running..."
+    - docker rm -f $APP_NAME || true
+    - echo "Running new container..."
+    - docker run -d -p $PORT:$PORT --name $APP_NAME $APP_NAME
